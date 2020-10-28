@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description"
+        content="This is and example of meta description. This will often show up in search results.">
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Acme" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <script src="js/gamemanager.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/rewards.js"></script>
+    <script src="js/locations.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="top">
+
+            <div class="topLeft">
+                <div class="buttons2">
+                    <button class="button" id="restartBTN" onclick="location.reload()">Restart game</button>
+                    <button class="button" id="saveBTN" onclick="GameManager.setSave()">Save game</button>
+                    <button class="button" id="scoreBTN"
+                        onclick="GameManager.setSave();setTimeout (function() {GameManager.setScore()},100);">Show
+                        scores</button>
+                </div>
+            </div>
+
+            <div class="topMiddle">
+                <div class="header">MustGet Heroes</div>
+            </div>
+
+            <div class="topRight">
+
+            </div>
+        </div>
+
+        <div class="middle">
+
+            <div class="userNameArea">
+
+                <div class="header2">
+                    <p>~ MustGet Heroes ~</p>
+                </div>
+                <form id="userForm">
+                    <div class="form-group">
+                        <br />
+
+                        <h2>Please enter your username:</h2>
+                        <br />
+                        <p>Username:</p>
+                        <input type="text" class="form-control" form action="#" id="username" maxlength="15"
+                            placeholder="Max. 15 characters" />
+                        <br />
+                        <br />
+                        <button class="loginBTN" onclick="GameManager.setLogin(); return false;">Login</button>
+                        <br />
+                        <br />
+                        <img src="pics/banner.png" alt="banner">
+                    </div>
+                </form>
+            </div>
+
+            <div class="charSelectionWrapper">
+
+                <div class="charSelectionInterface">
+                    <a href="#" onclick="GameManager.setGameStart('Warrior')">
+                        <img src="pics/heroes/warrior.png" alt="warrior">
+                        <div>
+                            <h3>Warrior</h3>
+                            <p>Warruperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+                    <a href="#" onclick="GameManager.setGameStart('Rogue')">
+                        <img src="pics/heroes/rogue.png" alt="rogue">
+                        <div>
+                            <h3>Rogue</h3>
+                            <p>Rogueperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+                    <a href="#" onclick="GameManager.setGameStart('Mage')">
+                        <img src="pics/heroes/mage.png" alt="mage">
+                        <div>
+                            <h3>Mage</h3>
+                            <p>Mageperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+                    <a href="#" onclick="GameManager.setGameStart('Hunter')">
+                        <img src="pics/heroes/hunter.png" alt="hunter">
+                        <div>
+                            <h3>Hunter</h3>
+                            <p>Hunuperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+
+                </div>
+                <div class="load">
+                    <a href="#"
+                        onclick="GameManager.setGameStart('Load');let getLoad = document.querySelector('.load');getLoad.style.display = 'none';">
+                        <img src="pics/heroes/load.png" alt="load">
+                        <div>
+                            <h3>Resume your previous game?</h3>
+                            <p>Saving new character will remove your old save!</p>
+                        </div>
+                    </a>
+                    <button class="button" id="deleteBTN" onclick="GameManager.setDelete()">X</button>
+                    <p class="deleteTxt"> Delete</p>
+                </div>
+            </div>
+
+
+            <div class="mapContainer">
+                <div class="map">
+                    <div class="startTravelTransit" id="travelTransit"></div>
+                    <img src="pics/worldmap.png" usemap="#clickMap" id="mapImage" alt="map"></img>
+                </div>
+                <map name="clickMap">
+                    <area shape="circle" coords="604,367,36" alt="Dusthollow" href="#"
+                        onclick="GameManager.setTravel('cityDusthollow');">
+                    <area shape="circle" coords="548,444,36" alt="MistyForest" href="#"
+                        onclick="GameManager.setTravel('mistyForest');">
+                    <area shape="circle" coords="446,392,36" alt="SeasideMtn" href="#"
+                        onclick="GameManager.setTravel('seasideMtn');">
+                    <area shape="circle" coords="663,516,36" alt="GreenportWharf" href="#"
+                        onclick="GameManager.setTravel('cityGreenportWharf');">
+                    <area shape="circle" coords="294,341,36" alt="SaltstoneHarbor" href="#"
+                        onclick="GameManager.setTravel('citySaltstoneHarbor');">
+                </map>
+
+                <button class="button" id="closeMapBTN"
+                    onclick="let getMapContainer = document.querySelector('.mapContainer');getMapContainer.style.display = 'none';GameManager.setDisableButtons('false');"><img
+                        class="BTNimage" src="pics/exploretr.png" alt="exploretr"> Close</button>
+            </div>
+
+            <div class="enemyProgress">
+                <div id="enemyBar" class="enemyBar"></div>
+            </div>
+
+            <div class="enemy"></div>
+
+            <div class="scoreScreen">
+                <h3>Top 20:</h3>
+                <div class="scores">
+                    <table class="scoreTable" table id="scoreTable"></table>
+                </div>
+                <button class="button" id="scoreOK"
+                    onclick="let getScoreScreen = document.querySelector('.scoreScreen');getScoreScreen.style.display = 'none';scoreTable.innerHTML = ''">OK</button>
+                <button class="button" id="scoreRestartBTN" onclick="location.reload()">Restart game</button>
+            </div>
+
+            <div class="townWindow">
+                <img class="townImage" src="pics/dusthollow.jpg" alt="townImage">
+                
+            </div>
+        </div>
+
+        <div class="bottom">
+
+            <div class="bottomLeft">
+
+                <div class="messages"></div>
+                <div class="messages2"></div>
+
+            </div>
+
+            <div class="bottomMiddle">
+
+                <div class="charWrapper">
+                    <div class="playerProgress"><div id="playerBar" class="playerBar"></div></div>
+                    <div class="interface">
+                        
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="bottomRight">
+
+                <div class="buttons">
+
+                    <button class="button" id="attackBTN" onclick="PlayerMoves.calcAttack('normalAttack')"><img
+                            class="BTNimage" src="pics/abilities/attack.png" alt="attack"> Attack!</button>
+
+                    <button class="button" id="fireboltBTN" onclick="PlayerMoves.calcAttack('mageFirebolt')"><img
+                            class="BTNimage" src="pics/abilities/firebolttr.png" alt="firebolt"> Firebolt!</button>
+
+                    <button class="button" id="exploreBTN" onclick="Locations.cityDusthollow('explore')" ;><img
+                            class="BTNimage" src="pics/exploretr.png" alt="exploretr"> Explore!</button>
+
+                    <button class="button" id="retreatBTN" onclick="Locations.cityDusthollow('retreat')" ;><img
+                            class="BTNimage" src="pics/retreattr.png" alt="retreattr"> Retreat!</button>
+
+                    <!--<button class="button" id="canvasBTN" onclick="GameManager.setCanvas()"><img class="BTNimage"
+                            src="pics/exploretr.png" alt="exploretr"> Canvas!</button> /> -->
+                    <button class="button" id="inventoryBTN" onclick="GameManager.setPlayerInventory()"><img
+                            class="BTNimage" src="pics/exploretr.png" alt="exploretr"> Inventory</button>
+                </div>
+                <div class="townButtons">
+                    <button class="button" id="healBTN" onclick="GameManager.setHeal('priest')"><img class="BTNimage"
+                            src="pics/ankhtr.png" alt="ankhtr"> Priest heal (-1gp)</button>
+                    <button class="button" id="campBTN" onclick="GameManager.setHeal('camp')"><img class="BTNimage"
+                            src="pics/campfiretr.png" alt="campfiretr"> Camp (+2hr)</button>
+                    <button class="button" id="mapBTN" onclick="GameManager.setMap()"><img class="BTNimage"
+                            src="pics/exploretr.png" alt="exploretr"> Map!</button>
+                </div>
+
+                
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 
+    <div class="container">
+        <div class="column left">
+            <h2></h2>
+            <p></p>
+        </div>
+
+        <div class="column middle" id="colMiddle">
+            <div class="header">
+                <p>~ MustGet Heroes ~</p>
+                <h2>Choose your character!</h2>
+            </div>
+
+            <div class="userNameArea">
+
+                <div class="header2">
+                    <p>~ MustGet Heroes ~</p>
+                </div>
+                <form id="userForm">
+                    <div class="form-group">
+                        <br />
+
+                        <h2>Please enter your username:</h2>
+                        <br />
+                        <p>Username:</p>
+                        <input type="text" class="form-control" form action="#" id="username" maxlength="15"
+                            placeholder="Max. 15 characters" />
+
+                            /> -->
+
+    <!-- <h2>Please enter your username and password:</h2>
+                        <br />
+                        <p>Username:</p>
+                        <input type="text" class="form-control" form action="#" id="username" maxlength="15"
+                            placeholder="Max. 15 characters" />
+                            
+                        <p>Password:</p>
+                        <input type="text" class="form-control" form action="#" id="password" maxlength="15"
+                             /> -->
+    <!--   <br /> 
+                        <br />
+                        <button class="loginBTN" onclick="GameManager.setLogin(); return false;">Login</button>
+                        <br />
+                        <br />
+                        <img src="pics/banner.png" alt="banner">
+                    </div>
+                </form>
+            </div>
+
+            <div class="playerInvScreen">
+
+                <div class="invContainer">
+                    <p>Character</p>
+                    <p class="draggable" draggable="true">1</p>
+                    <p class="draggable" draggable="true">2</p>
+                </div>
+                <div class="invContainer">
+                    <p>Inventory</p>
+                    <p class="draggable" draggable="true">3</p>
+                    <p class="draggable" draggable="true">4</p>
+                </div>
+
+            </div>
+
+            <div class="scoreScreen">
+                <h3>Top 20:</h3>
+                <div class="scores">
+                    <table class="scoreTable" table id="scoreTable"></table>
+                </div>
+                <button class="button" id="scoreOK"
+                    onclick="let getScoreScreen = document.querySelector('.scoreScreen');getScoreScreen.style.display = 'none';scoreTable.innerHTML = ''">OK</button>
+                <button class="button" id="scoreRestartBTN" onclick="location.reload()">Restart game</button>
+            </div>
+
+            <div class="lvlUpScreen">
+                <div class=lvlUpText>
+                    <h3>You have gained lvl up! Choose stat to improve:</h3>
+                </div>
+                <div class="buttons">
+                    <button class="button" id="lvlUpHP" onclick="GameManager.setLvlUp('maxHP')">+10 maxHP</button>
+                    <button class="button" id="lvlUpStr" onclick="GameManager.setLvlUp('Str')">+5 STR</button>
+                    <button class="button" id="lvlUpMan" onclick="GameManager.setLvlUp('Man')">+5 MAN</button>
+                    <button class="button" id="lvlUpAgi" onclick="GameManager.setLvlUp('Agi')">+5 AGI</button>
+                    <button class="button" id="lvlUpSpd" onclick="GameManager.setLvlUp('Spd')">+5 SPD</button>
+                </div>
+            </div>
+
+            <div class="interfaceRow">
+
+                <div class="charButtons">
+                    <button class="button" id="lvlUpHP" onclick="GameManager.setLvlUp('maxHP')">C</button>
+                    <button class="button" id="lvlUpStr" onclick="GameManager.setLvlUp('Str')">I</button>
+                </div>
+
+                <div class="interface">
+                    <a href="#" onclick="GameManager.setGameStart('Warrior')">
+                        <img src="pics/heroes/warrior.png" alt="warrior">
+                        <div>
+                            <h3>Warrior</h3>
+                            <p>Warruperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+                    <a href="#" onclick="GameManager.setGameStart('Rogue')">
+                        <img src="pics/heroes/rogue.png" alt="rogue">
+                        <div>
+                            <h3>Rogue</h3>
+                            <p>Rogueperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+                    <a href="#" onclick="GameManager.setGameStart('Mage')">
+                        <img src="pics/heroes/mage.png" alt="mage">
+                        <div>
+                            <h3>Mage</h3>
+                            <p>Mageperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+                    <a href="#" onclick="GameManager.setGameStart('Hunter')">
+                        <img src="pics/heroes/hunter.png" alt="hunter">
+                        <div>
+                            <h3>Hunter</h3>
+                            <p>Hunuperkele on kyl kovis.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+            <div class="load">
+                <a href="#"
+                    onclick="GameManager.setGameStart('Load');let getLoad = document.querySelector('.load');getLoad.style.display = 'none';">
+                    <img src="pics/heroes/load.png" alt="load">
+                    <div>
+                        <h3>Resume your previous game?</h3>
+                        <p>Saving new character will remove your old save!</p>
+                    </div>
+                </a>
+                <button class="button" id="deleteBTN" onclick="GameManager.setDelete()">X</button>
+                <p class="deleteTxt"> Delete</p>
+            </div>
+
+            <div class="mapContainer">
+                <div class="map">
+                    <div class="startTravelTransit" id="travelTransit"></div>
+                    <img src="pics/worldmap.png" usemap="#clickMap" id="mapImage" alt="map"></img>
+                </div>
+                <map name="clickMap">
+                    <area shape="circle" coords="604,367,36" alt="Dusthollow" href="#"
+                        onclick="GameManager.setTravel('cityDusthollow');">
+                    <area shape="circle" coords="548,444,36" alt="MistyForest" href="#"
+                        onclick="GameManager.setTravel('mistyForest');">
+                    <area shape="circle" coords="446,392,36" alt="SeasideMtn" href="#"
+                        onclick="GameManager.setTravel('seasideMtn');">
+                    <area shape="circle" coords="663,516,36" alt="GreenportWharf" href="#"
+                        onclick="GameManager.setTravel('cityGreenportWharf');">
+                    <area shape="circle" coords="294,341,36" alt="SaltstoneHarbor" href="#"
+                        onclick="GameManager.setTravel('citySaltstoneHarbor');">
+                </map>
+
+                <button class="button" id="closeMapBTN"
+                    onclick="let getMapContainer = document.querySelector('.mapContainer');getMapContainer.style.display = 'none';GameManager.setDisableButtons('false');"><img
+                        class="BTNimage" src="pics/exploretr.png" alt="exploretr"> Close</button>
+            </div>
+
+            <canvas div class="canvas" id="canvas"></canvas>
+
+            <div class="playerProgress">
+                <div id="playerBar" class="playerBar"></div>
+            </div>
+
+            <br />
+
+            <div class="buttons">
+
+                <button class="button" id="attackBTN" onclick="PlayerMoves.calcAttack('normalAttack')"><img
+                        class="BTNimage" src="pics/abilities/attack.png" alt="attack"> Attack!</button>
+
+                <button class="button" id="fireboltBTN" onclick="PlayerMoves.calcAttack('mageFirebolt')"><img
+                        class="BTNimage" src="pics/abilities/firebolttr.png" alt="firebolt"> Firebolt!</button>
+
+                <button class="button" id="exploreBTN" onclick="Locations.cityDusthollow('explore')" ;><img
+                        class="BTNimage" src="pics/exploretr.png" alt="exploretr"> Explore!</button>
+
+                <button class="button" id="retreatBTN" onclick="Locations.cityDusthollow('retreat')" ;><img
+                        class="BTNimage" src="pics/retreattr.png" alt="retreattr"> Retreat!</button>
+
+                <button class="button" id="canvasBTN" onclick="GameManager.setCanvas()"><img class="BTNimage"
+                        src="pics/exploretr.png" alt="exploretr"> Canvas!</button>
+                <button class="button" id="inventoryBTN" onclick="GameManager.setPlayerInventory()"><img
+                        class="BTNimage" src="pics/exploretr.png" alt="exploretr"> Inventory</button>
+            </div>
+
+        </div>
+
+        <div class="column right">
+
+            <div class="buttons2">
+                <button class="button" id="restartBTN" onclick="location.reload()">Restart game</button>
+                <button class="button" id="saveBTN" onclick="GameManager.setSave()">Save game</button>
+                <button class="button" id="scoreBTN"
+                    onclick="GameManager.setSave();setTimeout (function() {GameManager.setScore()},100);">Show
+                    scores</button>
+            </div>
+            <br />
+
+            <div class=townWindow>
+                <h3 class=townTitle>Dusthollow Town:</h3>
+                <img class="townImage" src="pics/dusthollow.jpg" alt="townImage">
+                <div class="townButtons">
+                    <button class="button" id="healBTN" onclick="GameManager.setHeal('priest')"><img class="BTNimage"
+                            src="pics/ankhtr.png" alt="ankhtr"> Priest heal (-1gp)</button>
+                    <button class="button" id="campBTN" onclick="GameManager.setHeal('camp')"><img class="BTNimage"
+                            src="pics/campfiretr.png" alt="campfiretr"> Camp (+2hr)</button>
+                    <button class="button" id="mapBTN" onclick="GameManager.setMap()"><img class="BTNimage"
+                            src="pics/exploretr.png" alt="exploretr"> Map!</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="arena">
+            <div class="messages">
+                <p></p>
+            </div>
+            <p></p>
+            <div class="messages2">
+                <p></p>
+            </div>
+
+        </div>
+
+        <div class="enemyProgress">
+            <div id="enemyBar" class="enemyBar"></div>
+        </div>
+
+        <div class="enemy"></div>
+
+    </div> 
+    /> -->
+
+
+    <script>
+        var form = document.getElementById("username");
+        function handleForm(event) { event.preventDefault(); }
+        form.addEventListener('submit', handleForm);
+
+
+        /*function onDragStart(event) {
+            event
+                .dataTransfer
+                .setData('text/plain', event.target.id);
+
+            event
+                .currentTarget
+                .style
+                .backgroundColor = 'yellow';
+        }*/
+
+    </script>
+
+</body>
+
+</html>
